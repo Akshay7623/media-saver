@@ -1,0 +1,9 @@
+.border_all {
+    border: 2px solid red;
+}
+
+.input_border_white {
+    border-color: white;
+    background-color: white;
+}
+
