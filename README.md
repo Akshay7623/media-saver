@@ -8,7 +8,7 @@
 Media Saver is a simple and fast web application that allows users to download videos, reels, shorts, from multiple social media platforms.
 Built with React (frontend) and Node.js/Express (backend), it provides a clean UI and smooth experience for saving media in just a few clicks.
 
-✨ Features
+## ✨ Features
 
 Download videos, reels, shorts, etc
 
@@ -16,15 +16,13 @@ Support for popular platforms (YouTube, Instagram, Facebook, X, etc.)
 
 Lightweight and responsive UI
 
-🚀 Tech Stack
+## 🚀 Tech Stack
 
 Frontend: React, nextui(Tailwind)
 
 Backend: Node.js + Express
 
 Other: API integration for media extraction
-
-🚀 How to Run the App
 
 ## 🚀 How to Run the App
 
