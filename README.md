@@ -10,7 +10,7 @@ Built with React (frontend) and Node.js/Express (backend), it provides a clean U
 
 ✨ Features
 
-Download videos, reels, shorts, and images
+Download videos, reels, shorts, etc
 
 Support for popular platforms (YouTube, Instagram, Facebook, X, etc.)
 
