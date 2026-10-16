@@ -1,71 +1,101 @@
-import { Typography } from '@material-tailwind/react'
-import React from 'react'
-import Nav from './Nav'
-import Footer from './Footer'
+import LegalPage from "./LegalPage";
 
-const TandC = () => {
-    return (
-        <>
-            <Nav />
-            <div className='px-5'>
-                <Typography className='my-2' variant="h5">Terms and Conditions of Use</Typography>
-                <Typography className='my-2' variant="lead">1.Terms </Typography>
-                <Typography variant="paragraph">
-                    By accessing this Website, accessible from [website name], you are agreeing to be bound by
-                    these Website Terms and Conditions of Use and agree that you are responsible for the agreement
-                    with any applicable local laws. If you disagree with any of these terms, you are prohibited from
-                    accessing this site. The materials contained in this Website are protected by copyright and trade mark
-                    law.
-                </Typography>
-                <Typography className='my-2' variant="lead">2. Use License</Typography>
-                <Typography variant='paragraph'>
-                    Permission is granted to temporarily download one copy of the materials on [website name]'s Website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
-                    <span className='block my-2 ml-5'>
-                        <li>modify or copy the materials;</li>
-                        <li>use the materials for any commercial purpose or for any public display;</li>
-                        <li>attempt to reverse engineer any software contained on [website name]'s Website;</li>
-                        <li>remove any copyright or other proprietary notations from the materials; or</li>
-                        <li>transferring the materials to another person or "mirror" the materials on any other server.</li>
-                    </span>
-                    This will let [website name] to terminate upon violations of any of these restrictions. Upon termination, your viewing right will also be terminated and you should destroy any downloaded materials in your possession whether it is printed or electronic format.
+const SECTIONS = [
+  {
+    id: "using",
+    title: "Using Media Saver",
+    body: (
+      <p>
+        Media Saver is a free tool for saving videos from links you provide. By using this website you agree to these
+        terms and to follow the laws that apply to you. If you don&apos;t agree, please don&apos;t use it.
+      </p>
+    ),
+  },
+  {
+    id: "acceptable-use",
+    title: "Acceptable use",
+    body: (
+      <p>
+        Only download videos you have the right to save: your own uploads, videos whose license allows downloading, or
+        content you have permission to keep. You&apos;re responsible for respecting copyright and the terms of the
+        sites you download from. Don&apos;t use Media Saver to infringe anyone&apos;s rights.
+      </p>
+    ),
+  },
+  {
+    id: "license",
+    title: "License",
+    body: (
+      <p>
+        The website&apos;s own design, text and code are protected by copyright. You may use the site for personal,
+        non-commercial purposes. You may not copy or modify its materials, use them commercially or for public display,
+        attempt to reverse engineer its software, remove copyright notices, or mirror the site on another server. This
+        license ends automatically if you break these restrictions.
+      </p>
+    ),
+  },
+  {
+    id: "warranty",
+    title: "No warranty",
+    body: (
+      <p>
+        Media Saver is provided as is, without warranties of any kind, express or implied. We don&apos;t promise that it
+        will work for every video, that it will always be available, or that the information on the site is accurate,
+        complete or current.
+      </p>
+    ),
+  },
+  {
+    id: "liability",
+    title: "Limitation of liability",
+    body: (
+      <p>
+        Media Saver and its makers aren&apos;t liable for any damages that arise from using, or being unable to use, the
+        site, even if we&apos;ve been told such damage is possible. Some jurisdictions don&apos;t allow these limits, so
+        they may not apply to you.
+      </p>
+    ),
+  },
+  {
+    id: "other-sites",
+    title: "Other websites",
+    body: (
+      <p>
+        Media Saver works with YouTube, Instagram, X and other sites it doesn&apos;t control. They can change at any
+        time, which may stop downloads from working. We aren&apos;t responsible for their content, and a link to a site
+        doesn&apos;t mean we endorse it. You use other sites at your own risk.
+      </p>
+    ),
+  },
+  {
+    id: "changes",
+    title: "Changes to these terms",
+    body: (
+      <p>
+        We may revise these terms at any time without notice. The version on this page is the one that applies, so
+        please check back from time to time.
+      </p>
+    ),
+  },
+  {
+    id: "law",
+    title: "Governing law",
+    body: (
+      <p>
+        These terms are governed by the laws of the applicable jurisdiction, without regard to its conflict of law
+        provisions.
+      </p>
+    ),
+  },
+];
 
-                </Typography>
-
-
-                <Typography className='my-2' variant="lead"> 3. Disclaimer</Typography>
-                <Typography variant='paragraph'>
-                    All the materials on [website name]'s Website are provided "as is". [website name] makes no warranties, may it be expressed or implied, therefore negates all other warranties. Furthermore, [website name] does not make any representations concerning the accuracy or reliability of the use of the materials on its Website or otherwise relating to such materials or any sites linked to this Website.
-                </Typography>
-
-                <Typography className='my-2' variant="lead"> 4. Limitations
-                </Typography>
-                <Typography variant='paragraph'>
-                    [website name] or its suppliers will not be hold accountable for any damages that will arise with the use or inability to use the materials on [website name]'s Website, even if [website name] or an authorize representative of this Website has been notified, orally or written, of the possibility of such damage. Some jurisdiction does not allow limitations on implied warranties or limitations of liability for incidental damages, these limitations may not apply to you.
-                </Typography>
-
-                <Typography className='my-2' variant="lead">5. Revisions and Errata </Typography>
-                <Typography variant='paragraph'>
-                    The materials appearing on [website name]'s Website may include technical, typographical, or photographic errors. [website name] will not promise that any of the materials in this Website are accurate, complete, or current. [website name] may change the materials contained on its Website at any time without notice. [website name] does not make any commitment to update the materials.
-                </Typography>
-
-                <Typography className='my-2' variant="lead">6. Links</Typography>
-                <Typography variant='paragraph'>
-                    [website name] has not reviewed all of the sites linked to its Website and is not responsible for the contents of any such linked site. The presence of any link does not imply endorsement by [website name] of the site. The use of any linked website is at the user's own risk.
-                </Typography>
-
-                <Typography className='my-2' variant="lead">7. Site Terms of Use Modifications </Typography>
-                <Typography variant='paragraph'>
-                    [website name] may revise these Terms of Use for its Website at any time without prior notice. By using this Website, you are agreeing to be bound by the current version of these Terms and Conditions of Use.
-                </Typography>
-
-                <Typography className='my-2' variant="lead">8. Governing Law</Typography>
-                <Typography variant='paragraph'>
-                    Any claim related to [website name]'s Website shall be governed by the laws of au without regards to its conflict of law provisions.
-                </Typography>
-            </div>
-            <Footer />
-        </>
-    )
+export default function TandC() {
+  return (
+    <LegalPage
+      title="Terms & Conditions"
+      updated="October 17, 2026"
+      intro="Please read these terms before using Media Saver. By using the site, you agree to them."
+      sections={SECTIONS}
+    />
+  );
 }
-
-export default TandC

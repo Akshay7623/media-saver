@@ -2,9 +2,32 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <title>Media Saver — Save videos from YouTube, Instagram and X</title>
+    <meta
+      name="description"
+      content="Save YouTube videos and Shorts, Instagram reels, X videos and direct video links right in your browser. Free, no sign-up, nothing to install."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Media Saver — Save videos right in your browser" />
+    <meta
+      property="og:description"
+      content="Paste a link from YouTube, Instagram or X and keep the video. Free, no sign-up, and no server in between."
+    />
+    <meta name="theme-color" content="#f7f7f2" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script>
+      // Apply the saved theme before the page paints, so it never flashes.
+      try {
+        var saved = localStorage.getItem("vidsaver-theme");
+        var dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+        if (dark) {
+          document.documentElement.classList.add("dark");
+          document.querySelector('meta[name="theme-color"]').content = "#0c0d0b";
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,47 +1,29 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import About from "./Components/About";
-import AppWrapper from "./Components/AppWrapper";
+import Layout from "./Components/Layout";
 import Home from "./Components/Home";
-import Contact from './Components/Contact'
-import TandC from './Components/TandC'
-import Privacy from "./Components/Privacy"
-import './App.css'
-
+import About from "./Components/About";
+import TandC from "./Components/TandC";
+import Privacy from "./Components/Privacy";
+import NotFound from "./Components/NotFound";
+import { AppThemeProvider } from "./context/ThemeContext";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Home />,
+    element: <Layout />,
+    children: [
+      { path: "/", element: <Home /> },
+      { path: "/about", element: <About /> },
+      { path: "/t-and-c", element: <TandC /> },
+      { path: "/privacy-policy", element: <Privacy /> },
+      { path: "*", element: <NotFound /> },
+    ],
   },
-  {
-    path: 'home',
-    element: <div>Home page</div>,
-  },
-  {
-    path: '/about',
-    element: <About />,
-  },
-  {
-    path: '/contact',
-    element: <Contact />
-  },
-  {
-    path: 't-and-c',
-    element: <TandC />
-  },
-  {
-    path: 'privacy-policy',
-    element: <Privacy />
-  }
 ]);
 
-function App() {
-
+export default function App() {
   return (
-    <AppWrapper>
+    <AppThemeProvider>
       <RouterProvider router={router} />
-    </AppWrapper>
-  )
+    </AppThemeProvider>
+  );
 }
-
-export default App

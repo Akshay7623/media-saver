@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Android bookmark guide</title>
+<!--
+  Scene for src/assets/guides/android-bookmark.gif. render(t) draws the
+  moment t seconds in, and make-gifs.mjs captures it frame by frame. It is a
+  mock-up, not a recording: no real browser, YouTube page or video appears.
+-->
+<style>
+  /* Colors and fonts follow the site: src/index.css. */
+  @font-face { font-family: "Inter"; src: url(../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; }
+  @font-face { font-family: "Bricolage"; src: url(../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2) format("woff2"); font-weight: 200 800; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #111310; font-family: "Inter", "Segoe UI", system-ui, Roboto, sans-serif; }
+  #stage { position: relative; width: 300px; height: 580px; overflow: hidden; background: #111310; }
+  .screen { position: absolute; left: 14px; top: 12px; width: 272px; height: 482px; border-radius: 22px; background: #f7f7f2; overflow: hidden; }
+  .toolbar { position: absolute; left: 0; right: 0; top: 0; height: 46px; display: flex; align-items: center; gap: 9px; padding: 0 10px; background: #fff; border-bottom: 1px solid #e8e8e1; z-index: 3; }
+  .addr { flex: 1; height: 30px; border-radius: 15px; background: #efefe9; display: flex; align-items: center; padding: 0 12px; font-size: 11.5px; color: #52564f; white-space: nowrap; overflow: hidden; }
+  .addr.focus { background: #fff; box-shadow: inset 0 0 0 2px #3f6212; color: #111310; }
+  .caret { display: inline-block; width: 1px; height: 14px; background: #111310; margin-left: 1px; }
+  .tabs { width: 20px; height: 20px; border: 2px solid #52564f; border-radius: 5px; font-size: 10px; font-weight: 700; color: #52564f; display: flex; align-items: center; justify-content: center; flex: none; }
+  .dots { width: 14px; height: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; flex: none; }
+  .dots i { width: 3.5px; height: 3.5px; border-radius: 50%; background: #52564f; display: block; }
+  .content { position: absolute; left: 0; right: 0; top: 46px; bottom: 0; }
+  .page { position: absolute; inset: 0; padding: 16px 14px; visibility: hidden; background: #f7f7f2; }
+  .h { font-family: "Bricolage", "Inter", sans-serif; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; color: #111310; margin-bottom: 14px; }
+  .step { display: flex; gap: 9px; margin-bottom: 13px; font-size: 11px; line-height: 1.45; color: #52564f; }
+  .n { width: 20px; height: 20px; border-radius: 50%; border: 1px solid #cccdc2; background: #fff; color: #111310; font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 28px; padding: 0 12px; border-radius: 9px; font-size: 11.5px; font-weight: 600; white-space: nowrap; margin-top: 7px; background: #c5f24a; color: #111310; box-shadow: inset 0 0 0 1px rgba(0,0,0,.07); }
+  .btn.outline { background: #fff; border: 1px solid #e2e2d9; box-shadow: none; }
+  .btn.down { background: #a9da24; }
+  .menu { position: absolute; right: 6px; top: 6px; width: 176px; border-radius: 12px; background: #fff; box-shadow: 0 8px 28px rgba(0,0,0,.3); z-index: 6; visibility: hidden; padding: 6px 0; }
+  .icons { display: flex; justify-content: space-around; padding: 2px 6px 8px; border-bottom: 1px solid #e8e8e1; font-size: 15px; color: #52564f; }
+  .icons span { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+  #star.on { color: #3f6212; }
+  .item { padding: 8px 16px; font-size: 12px; color: #2b2e29; }
+  .snack { position: absolute; left: 10px; right: 10px; bottom: 12px; height: 40px; border-radius: 10px; background: #1d201c; color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font-size: 12px; z-index: 6; visibility: hidden; }
+  .snack b { color: #c5f24a; padding: 6px 4px; }
+  .edit { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: #fff; z-index: 7; visibility: hidden; padding: 0 16px; }
+  .edit .bar { height: 46px; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; color: #111310; margin: 0 -16px; padding: 0 12px; border-bottom: 1px solid #e8e8e1; }
+  #back { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .label { font-size: 10.5px; color: #3f6212; margin: 16px 0 5px; font-weight: 600; }
+  .field { height: 34px; border-radius: 8px; box-shadow: inset 0 0 0 1px #d6d6cd; display: flex; align-items: center; padding: 0 10px; font-size: 12px; color: #111310; overflow: hidden; white-space: nowrap; }
+  .field.focus { box-shadow: inset 0 0 0 2px #3f6212; }
+  .field.flash { background: #eefad0; }
+  .sugg { position: absolute; left: 0; right: 0; top: 46px; background: #fff; z-index: 5; visibility: hidden; border-bottom: 1px solid #e8e8e1; box-shadow: 0 6px 12px rgba(0,0,0,.06); }
+  .srow { display: flex; gap: 10px; align-items: center; padding: 10px 14px; }
+  .sicon { width: 24px; height: 24px; border-radius: 50%; background: #efefe9; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #52564f; flex: none; }
+  .st { font-size: 12px; color: #111310; }
+  .ss { font-size: 10.5px; color: #6b7067; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 200px; }
+  .video { margin: -16px -14px 14px; height: 153px; background: #1d201c; position: relative; }
+  .play { position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; background: rgba(255,255,255,.18); }
+  .play::after { content: ""; position: absolute; left: 16px; top: 12px; border-left: 12px solid #fff; border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+  .line { height: 9px; border-radius: 5px; background: #e2e2da; margin-bottom: 9px; }
+  .badge { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); padding: 7px 11px; border-radius: 10px; background: #c5f24a; color: #111310; font-size: 10.5px; font-weight: 600; white-space: nowrap; visibility: hidden; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
+  .card { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
+  .thumb { width: 84px; height: 47px; border-radius: 7px; background: #1d201c; position: relative; flex: none; }
+  .thumb .play { width: 22px; height: 22px; margin: -11px 0 0 -11px; }
+  .thumb .play::after { left: 8px; top: 6px; border-left-width: 8px; border-top-width: 5px; border-bottom-width: 5px; }
+  .dur { position: absolute; right: 4px; bottom: 4px; padding: 1px 4px; border-radius: 4px; background: rgba(0,0,0,.75); color: #fff; font-size: 8.5px; font-weight: 600; }
+  .site { font-size: 10.5px; font-weight: 600; color: #e62117; }
+  .title { font-family: "Bricolage", "Inter", sans-serif; font-size: 14px; font-weight: 700; color: #111310; margin-top: 2px; }
+  .chips { display: flex; gap: 6px; }
+  .q { flex: 1; height: 36px; border: 1px solid #e2e2d9; border-radius: 9px; background: #fff; display: flex; flex-direction: column; justify-content: center; padding: 0 8px; font-size: 11px; font-weight: 600; color: #111310; }
+  .q b { margin-left: 3px; padding: 1px 3px; border-radius: 3px; background: #111310; color: #f7f7f2; font-size: 7.5px; }
+  .q small { font-size: 9px; font-weight: 500; color: #6b7067; }
+  .q.sel { border-color: #3f6212; background: #eefad0; }
+  .wide { display: flex; width: 100%; height: 34px; margin: 12px 0 14px; }
+  .barp { height: 6px; border-radius: 3px; background: #e2e2da; overflow: hidden; margin-bottom: 10px; }
+  .fill { height: 100%; width: 0; background: #3f6212; }
+  .saved { display: inline-flex; padding: 5px 10px; border-radius: 8px; background: rgba(197,242,74,.3); font-size: 11.5px; font-weight: 600; color: #111310; visibility: hidden; }
+  .cap { position: absolute; left: 14px; right: 14px; top: 506px; display: flex; gap: 10px; color: #f2f3ee; font-size: 13px; font-weight: 600; line-height: 1.4; }
+  .capn { width: 24px; height: 24px; border-radius: 50%; background: #c5f24a; color: #111310; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none; }
+  #tap { position: absolute; width: 36px; height: 36px; margin: -18px 0 0 -18px; border-radius: 50%; background: rgba(197,242,74,.45); border: 2px solid rgba(63,98,18,.85); visibility: hidden; z-index: 10; }
+  #fade { position: absolute; inset: 0; background: #111310; opacity: 0; z-index: 20; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="screen" id="screen">
+    <div class="toolbar">
+      <div class="addr" id="addr"></div>
+      <div class="tabs" id="tabs">1</div>
+      <div class="dots" id="dots"><i></i><i></i><i></i></div>
+    </div>
+    <div class="sugg" id="sugg">
+      <div class="srow" id="srow">
+        <div class="sicon">
+          <svg id="iconClip" width="13" height="13" viewBox="0 0 12 12"><rect x="2.5" y="2" width="7" height="9" rx="1.2" fill="none" stroke="#52564f" stroke-width="1.2"/><rect x="4.3" y="1" width="3.4" height="2.2" rx=".6" fill="#52564f"/></svg>
+          <span id="iconStar">☆</span>
+        </div>
+        <div><div class="st" id="st"></div><div class="ss" id="ss"></div></div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="page" id="pageA">
+        <div class="h">YouTube needs the Media Saver bookmark</div>
+        <div class="step"><span class="n">1</span><div>Copy the bookmark code.<br><span class="btn" id="copyBm">Copy bookmark code</span></div></div>
+        <div class="step"><span class="n">2</span><div>Bookmark this page with ☆, tap Edit and paste the code as the address.</div></div>
+        <div class="step"><span class="n">3</span><div>Copy the video link and paste it into the address bar.<br><span class="btn outline" id="copyLink">Copy video link</span></div></div>
+        <div class="step"><span class="n">4</span><div>Type Media Saver in the address bar and tap the bookmark.</div></div>
+      </div>
+      <div class="page" id="pageE">
+        <div class="video"><div class="play"></div></div>
+        <div class="line" style="width:88%"></div>
+        <div class="line" style="width:62%"></div>
+        <div class="line" style="width:40%;background:#ebebe4"></div>
+        <div class="badge" id="badge">⬇️ Media Saver is connected to this tab</div>
+      </div>
+      <div class="page" id="pageG">
+        <div class="card"><div class="thumb"><div class="play"></div><span class="dur">10:34</span></div><div><div class="site"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:-2px"><rect x="2" y="5" width="20" height="14" rx="4.5" fill="#e62117"/><path d="M10 9v6l5.2-3z" fill="#fff"/></svg> YouTube</div><div class="title">Your video</div></div></div>
+        <div class="chips"><div class="q sel"><span>720p<b>HD</b></span><small>~48 MB</small></div><div class="q"><span>480p</span><small>~26 MB</small></div><div class="q"><span>360p</span><small>~15 MB</small></div></div>
+        <span class="btn wide" id="dlBtn">⬇ Download 720p</span>
+        <div class="barp"><div class="fill" id="fill"></div></div>
+        <div class="saved" id="saved">✓ Saved to your Downloads</div>
+      </div>
+      <div class="snack" id="snack"><span>Bookmarked</span><b id="snackEdit">Edit</b></div>
+    </div>
+    <div class="menu" id="menu">
+      <div class="icons"><span>→</span><span id="star">☆</span><span>⬇</span><span>ⓘ</span><span>↻</span></div>
+      <div class="item">New tab</div><div class="item">History</div><div class="item">Bookmarks</div><div class="item">Downloads</div>
+    </div>
+    <div class="edit" id="edit">
+      <div class="bar"><span id="back">←</span>Edit bookmark</div>
+      <div class="label">Name</div><div class="field" id="fName"></div>
+      <div class="label">URL</div><div class="field" id="fUrl"></div>
+      <div class="label" style="color:#6b7067">Folder</div><div class="field" style="color:#52564f">Mobile bookmarks</div>
+    </div>
+  </div>
+  <div class="cap"><span class="capn" id="capn"></span><span id="capt"></span></div>
+  <div id="tap"></div>
+  <div id="fade"></div>
+</div>
+<script>
+  window.FPS = 10;
+  window.DURATION = 17;
+
+  // Measure positions only once the fonts are in.
+  Promise.all(["700 16px Bricolage", "400 12px Inter", "600 12px Inter"].map((f) => document.fonts.load(f)))
+    .then(() => document.fonts.ready)
+    .then(() => {
+
+  const $ = (s) => document.querySelector(s);
+  const origin = $("#stage").getBoundingClientRect();
+  const center = (s) => {
+    const r = $(s).getBoundingClientRect();
+    return { x: r.left - origin.left + r.width / 2, y: r.top - origin.top + r.height / 2 };
+  };
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const ease = (x) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2);
+  const prog = (t, a, b) => ease(clamp((t - a) / (b - a)));
+  const typed = (text, t, a, b) => text.slice(0, Math.floor(clamp((t - a) / (b - a)) * text.length));
+  const show = (s, on) => { $(s).style.visibility = on ? "visible" : "hidden"; };
+  const within = (t, a, b) => t >= a && t < b;
+
+  const CODE = "javascript:(function relay(SITE){…";
+  const VIDEO = "m.youtube.com/watch?v=…";
+  const NAME = "Media Saver";
+  // [time, element tapped], in seconds.
+  const TAPS = [[1.2, "#copyBm"], [2.7, "#dots"], [3.4, "#star"], [4.6, "#snackEdit"], [5.2, "#fName"], [6.6, "#fUrl"],
+    [7.5, "#back"], [8.4, "#copyLink"], [9.1, "#addr"], [9.8, "#srow"], [10.9, "#addr"], [12.5, "#srow"], [13.9, "#dlBtn"]]
+    .map(([at, s]) => [at, center(s)]);
+  const CAPTIONS = [[0, 1, "Tap Copy bookmark code. Steps 1 and 2 happen only once."],
+    [2.2, 2, "In Chrome's menu, tap ☆, then Edit. Name it Media Saver and paste the code as the address."],
+    [7.9, 3, "Tap Copy video link and paste it into the address bar."],
+    [10.5, 4, "Tap the address bar, type Media Saver and tap the bookmark."],
+    [13.3, 4, "Media Saver opens with the video ready. Download it."]];
+
+  window.render = (t) => {
+    // Address bar
+    const addr = $("#addr");
+    let text = NAME, focus = false;
+    if (within(t, 9.2, 10.0)) { text = ""; focus = true; }
+    else if (within(t, 11.0, 12.6)) { text = typed(NAME, t, 11.1, 12.1); focus = true; }
+    else if (within(t, 10.0, 13.3)) text = VIDEO;
+    addr.classList.toggle("focus", focus);
+    addr.textContent = text;
+    if (focus) addr.insertAdjacentHTML("beforeend", '<span class="caret"></span>');
+    $("#tabs").textContent = t >= 13.3 ? "2" : "1";
+
+    // Suggestions under the address bar
+    const clip = within(t, 9.3, 10.0), bookmark = within(t, 11.5, 12.6);
+    show("#sugg", clip || bookmark);
+    $("#iconClip").style.display = clip ? "block" : "none";
+    $("#iconStar").style.display = clip ? "none" : "inline";
+    $("#st").textContent = clip ? "Link you copied" : "⬇️ Media Saver";
+    $("#ss").textContent = clip ? VIDEO : CODE;
+
+    // Pages
+    show("#pageA", t < 10.0);
+    show("#pageE", within(t, 10.0, 13.3));
+    show("#pageG", t >= 13.3);
+    const copiedBm = t >= 1.35, copiedLink = t >= 8.55;
+    $("#copyBm").textContent = copiedBm ? "✓ Copied" : "Copy bookmark code";
+    $("#copyBm").classList.toggle("ok", copiedBm);
+    $("#copyLink").textContent = copiedLink ? "✓ Copied" : "Copy video link";
+    $("#copyLink").classList.toggle("ok", copiedLink);
+
+    // Chrome menu, snackbar and the Edit bookmark screen
+    show("#menu", within(t, 2.8, 3.9));
+    $("#star").textContent = t >= 3.5 ? "★" : "☆";
+    $("#star").classList.toggle("on", t >= 3.5);
+    show("#snack", within(t, 4.0, 4.95));
+    show("#edit", within(t, 4.8, 7.7));
+    $("#fName").textContent = t < 5.35 ? "Media Saver — Save videos from YouTube, Instagram and X" : typed(NAME, t, 5.4, 6.3);
+    $("#fName").classList.toggle("focus", within(t, 5.25, 6.6));
+    $("#fUrl").textContent = t < 6.8 ? "https://…" : CODE;
+    $("#fUrl").classList.toggle("focus", within(t, 6.65, 7.5));
+    $("#fUrl").classList.toggle("flash", within(t, 6.8, 7.1));
+
+    // The YouTube tab, then the download in Media Saver's new tab
+    show("#badge", within(t, 12.65, 13.3));
+    $("#dlBtn").classList.toggle("down", within(t, 13.9, 14.05));
+    $("#fill").style.width = prog(t, 14.0, 15.3) * 100 + "%";
+    show("#saved", t >= 15.3);
+
+    // Tap ripple
+    const tap = TAPS.find(([at]) => within(t, at, at + 0.45));
+    show("#tap", Boolean(tap));
+    if (tap) {
+      const p = (t - tap[0]) / 0.45;
+      Object.assign($("#tap").style, { left: tap[1].x + "px", top: tap[1].y + "px", transform: `scale(${0.7 + 0.55 * p})`, opacity: String(1 - p) });
+    }
+
+    const [, n, caption] = CAPTIONS.filter(([at]) => t >= at).pop();
+    $("#capn").textContent = n;
+    $("#capt").textContent = caption;
+
+    // Fade in and out so the loop restarts cleanly.
+    $("#fade").style.opacity = String(Math.max(1 - t / 0.3, prog(t, window.DURATION - 0.45, window.DURATION)));
+  };
+
+  window.render(0);
+  });
+</script>
+</body>
+</html>

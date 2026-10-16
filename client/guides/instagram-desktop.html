@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Instagram desktop bookmark guide</title>
+<!--
+  Scene for src/assets/guides/instagram-desktop-bookmark.gif. render(t) draws the
+  moment t seconds in, and make-gifs.mjs captures it frame by frame. It is a
+  mock-up, not a recording: no real browser, Instagram page or video appears.
+-->
+<style>
+  /* Colors and fonts follow the site: src/index.css. */
+  @font-face { font-family: "Inter"; src: url(../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; }
+  @font-face { font-family: "Bricolage"; src: url(../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2) format("woff2"); font-weight: 200 800; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #111310; font-family: "Inter", "Segoe UI", system-ui, sans-serif; }
+  #stage { position: relative; width: 560px; height: 360px; overflow: hidden; background: #111310; }
+  .win { position: absolute; left: 16px; top: 14px; width: 528px; height: 282px; border-radius: 12px; background: #f7f7f2; overflow: hidden; }
+  .tabs { position: relative; height: 32px; background: #e2e2da; }
+  .tab { position: absolute; top: 6px; height: 26px; width: 148px; padding: 0 10px; border-radius: 8px 8px 0 0; display: none; align-items: center; gap: 6px; font-size: 11px; color: #3d413a; white-space: nowrap; }
+  .tab.active { background: #f7f7f2; }
+  .fav { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+  .toolbar { height: 30px; display: flex; align-items: center; gap: 7px; padding: 0 10px; }
+  .nav { width: 9px; height: 9px; border-radius: 50%; background: #d3d3ca; flex: none; }
+  .addr { flex: 1; height: 20px; border-radius: 10px; background: #ebebE4; display: flex; align-items: center; padding: 0 10px; font-size: 11px; color: #52564f; }
+  .bmbar { position: relative; height: 24px; display: flex; align-items: center; padding: 0 8px; border-bottom: 1px solid #e2e2d9; }
+  .bmbar.drop { background: #eefad0; box-shadow: inset 0 0 0 2px #3f6212; }
+  #bmHint { position: absolute; left: 12px; font-size: 10.5px; color: #9a9e93; }
+  .bmbar.drop #bmHint { color: #3f6212; font-weight: 600; }
+  .bm { display: inline-flex; align-items: center; gap: 5px; height: 18px; padding: 0 7px; border-radius: 9px; color: #111310; font-size: 11px; visibility: hidden; }
+  .bm.hover { background: #e2e2da; }
+  .content { position: absolute; left: 0; right: 0; top: 86px; bottom: 0; }
+  .page { position: absolute; inset: 0; padding: 16px 22px; visibility: hidden; }
+  .h { font-family: "Bricolage", "Inter", sans-serif; font-size: 16px; font-weight: 700; letter-spacing: -0.01em; color: #111310; margin-bottom: 16px; }
+  .row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #52564f; margin-bottom: 14px; }
+  .n { width: 20px; height: 20px; border-radius: 50%; border: 1px solid #cccdc2; background: #fff; color: #111310; font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 28px; padding: 0 12px; border-radius: 9px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+  .chip { border-radius: 999px; background: #c5f24a; color: #111310; box-shadow: inset 0 0 0 1px rgba(0,0,0,.07), 0 6px 14px -6px rgba(197,242,74,.95); }
+  .chip.down { background: #b4e632; }
+  .lime { background: #c5f24a; color: #111310; box-shadow: inset 0 0 0 1px rgba(0,0,0,.07); }
+  .lime.down { background: #a9da24; }
+  .outline { background: #fff; color: #111310; border: 1px solid #e2e2d9; }
+  .outline.down { background: #ebebE4; }
+  .grow { flex: 1; }
+  #ghost { position: absolute; opacity: .9; visibility: hidden; z-index: 5; box-shadow: 0 8px 18px rgba(0,0,0,.35); }
+  .vrow { display: flex; gap: 16px; }
+  .video { width: 236px; height: 133px; border-radius: 8px; background: #1d201c; position: relative; flex: none; }
+  .play { position: absolute; left: 50%; top: 50%; width: 38px; height: 38px; margin: -19px 0 0 -19px; border-radius: 50%; background: rgba(255,255,255,.18); }
+  .play::after { content: ""; position: absolute; left: 15px; top: 11px; border-left: 12px solid #fff; border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+  .lines { flex: 1; padding-top: 4px; }
+  .line { height: 9px; border-radius: 5px; background: #e2e2da; margin-bottom: 9px; }
+  .badge { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); padding: 7px 12px; border-radius: 10px; background: #c5f24a; color: #111310; font-size: 11px; font-weight: 600; white-space: nowrap; visibility: hidden; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
+  .card { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+  .thumb { width: 84px; height: 47px; border-radius: 7px; background: #1d201c; position: relative; flex: none; }
+  .thumb .play { width: 22px; height: 22px; margin: -11px 0 0 -11px; }
+  .thumb .play::after { left: 8px; top: 6px; border-left-width: 8px; border-top-width: 5px; border-bottom-width: 5px; }
+  .dur { position: absolute; right: 4px; bottom: 4px; padding: 1px 4px; border-radius: 4px; background: rgba(0,0,0,.75); color: #fff; font-size: 8.5px; font-weight: 600; }
+  .site { font-size: 10.5px; font-weight: 600; color: #e62117; }
+  .title { font-family: "Bricolage", "Inter", sans-serif; font-size: 14px; font-weight: 700; color: #111310; margin-top: 2px; }
+  .chips { display: flex; gap: 6px; margin-bottom: 10px; }
+  .q { position: relative; flex: 1; height: 34px; border: 1px solid #e2e2d9; border-radius: 9px; background: #fff; display: flex; flex-direction: column; justify-content: center; padding: 0 9px; font-size: 11px; font-weight: 600; color: #111310; }
+  .q b { margin-left: 3px; padding: 1px 3px; border-radius: 3px; background: #111310; color: #f7f7f2; font-size: 7.5px; }
+  .q small { font-size: 9px; font-weight: 500; color: #6b7067; }
+  .q.sel { border-color: #3f6212; background: #eefad0; }
+  .controls { display: flex; gap: 8px; margin-bottom: 10px; }
+  .bar { height: 6px; border-radius: 3px; background: #e2e2da; overflow: hidden; margin-bottom: 8px; }
+  .fill { height: 100%; width: 0; background: #3f6212; }
+  .done { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 8px; background: rgba(197,242,74,.3); font-size: 11px; font-weight: 600; color: #111310; visibility: hidden; }
+  .cap { position: absolute; left: 18px; right: 18px; top: 306px; height: 44px; display: flex; align-items: center; gap: 10px; color: #f2f3ee; font-size: 14px; font-weight: 600; }
+  .capn { width: 26px; height: 26px; border-radius: 50%; background: #c5f24a; color: #111310; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none; }
+  #cursor { position: absolute; width: 18px; height: 24px; z-index: 10; }
+  #ring { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; border: 2px solid #c5f24a; visibility: hidden; z-index: 9; }
+  #fade { position: absolute; inset: 0; background: #111310; opacity: 0; z-index: 20; }
+
+  /* Instagram scene: a generic reel page and the reel's result card. */
+  .reel { display: flex; gap: 16px; }
+  .rvid { width: 79px; height: 140px; border-radius: 8px; background: #1d201c; position: relative; flex: none; }
+  .rvid .play { width: 30px; height: 30px; margin: -15px 0 0 -15px; }
+  .rvid .play::after { left: 11px; top: 8px; border-left-width: 10px; border-top-width: 7px; border-bottom-width: 7px; }
+  .rside { flex: 1; padding-top: 2px; }
+  .who { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #f0b3cf, #d62976); flex: none; }
+  .login { position: absolute; left: 0; right: 0; bottom: 0; height: 30px; display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; border-top: 1px solid #e2e2d9; font-size: 11px; color: #52564f; }
+  .lbtn { padding: 4px 10px; border-radius: 7px; background: #e2e2da; color: #111310; font-weight: 600; font-size: 10.5px; }
+  .badge { bottom: 40px; }
+  .pthumb { width: 36px; height: 64px; border-radius: 6px; background: #1d201c; position: relative; flex: none; }
+  .pthumb .play { width: 18px; height: 18px; margin: -9px 0 0 -9px; }
+  .pthumb .play::after { left: 6.5px; top: 4.5px; border-left-width: 7px; border-top-width: 4.5px; border-bottom-width: 4.5px; }
+  .site.ig { color: #d62976; }
+  .by { color: #6b7067; font-weight: 500; }
+  .note { font-size: 10.5px; color: #6b7067; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="win">
+    <div class="tabs">
+      <div class="tab" id="tab1" style="left:8px"><span class="fav" style="background:#c5f24a"></span>Media Saver</div>
+      <div class="tab" id="tab2" style="left:158px"><span class="fav" style="background:#d62976"></span>Your reel • Instagram</div>
+      <div class="tab" id="tab3" style="left:308px"><span class="fav" style="background:#c5f24a"></span>Media Saver</div>
+    </div>
+    <div class="toolbar"><span class="nav"></span><span class="nav"></span><div class="addr" id="addr"></div></div>
+    <div class="bmbar" id="bmbar">
+      <span id="bmHint">Bookmarks bar</span>
+      <span class="bm" id="bm">
+        <svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="none" stroke="#8a899c" stroke-width="1.2"/><ellipse cx="6" cy="6" rx="2.2" ry="5" fill="none" stroke="#8a899c"/><path d="M1 6h10" stroke="#8a899c"/></svg>
+        ⬇️ Media Saver
+      </span>
+    </div>
+    <div class="content">
+      <div class="page" id="pageA">
+        <div class="h">Instagram needs the Media Saver bookmark</div>
+        <div class="row"><span class="n">1</span>Drag <span class="btn chip" id="dragBtn">⬇️ Media Saver</span> to your bookmarks bar</div>
+        <div class="row"><span class="n">2</span><span class="btn outline" id="openBtn">Open this reel on Instagram <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6b7067" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5h5v5M19 5l-8 8M17 14v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h4"/></svg></span></div>
+      </div>
+      <div class="page" id="pageB">
+        <div class="reel">
+          <div class="rvid"><div class="play"></div></div>
+          <div class="rside">
+            <div class="who"><span class="avatar"></span><span class="line" style="width:96px;margin:0"></span></div>
+            <div class="line" style="width:92%"></div><div class="line" style="width:74%"></div><div class="line" style="width:50%;background:#ebebe4"></div>
+          </div>
+        </div>
+        <div class="login"><span>Log in to see more</span><span class="lbtn">Log in</span></div>
+        <div class="badge" id="badge">⬇️ Media Saver is connected to this tab</div>
+      </div>
+      <div class="page" id="pageC">
+        <div class="card"><div class="pthumb"><div class="play"></div></div><div><div class="site ig"><svg width="12" height="12" viewBox="0 0 24 24" style="vertical-align:-2px" fill="none" stroke="#d62976" stroke-width="2.4"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.8"/></svg> Instagram <span class="by">· @creator</span></div><div class="title">Your reel</div></div></div>
+        <div class="controls"><span class="btn lime" id="dlBtn">⬇ Download 720p</span></div>
+        <div class="note">Instagram offers reels as one file with sound, at up to 720p.</div>
+        <div class="bar"><div class="fill" id="fill"></div></div>
+        <div class="done" id="done">✓ Saved to your Downloads</div>
+      </div>
+    </div>
+  </div>
+  <div class="btn chip" id="ghost">⬇️ Media Saver</div>
+  <div class="cap"><span class="capn" id="capn"></span><span id="capt"></span></div>
+  <div id="ring"></div>
+  <svg id="cursor" viewBox="0 0 18 24"><path d="M1 1 L1 19 L5.5 14.8 L8.6 22 L11.6 20.7 L8.6 13.6 L14.6 13.6 Z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
+  <div id="fade"></div>
+</div>
+<script>
+  window.FPS = 12;
+  window.DURATION = 11.6;
+
+  // Measure positions only once the fonts are in.
+  Promise.all(["700 16px Bricolage", "400 12px Inter", "600 12px Inter"].map((f) => document.fonts.load(f)))
+    .then(() => document.fonts.ready)
+    .then(() => {
+
+  const $ = (s) => document.querySelector(s);
+  const origin = $("#stage").getBoundingClientRect();
+  const center = (s) => {
+    const r = $(s).getBoundingClientRect();
+    return { x: r.left - origin.left + r.width / 2, y: r.top - origin.top + r.height / 2 };
+  };
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const ease = (x) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2);
+  const prog = (t, a, b) => ease(clamp((t - a) / (b - a)));
+  const show = (s, on) => { $(s).style.visibility = on ? "visible" : "hidden"; };
+
+  // Timeline, in seconds.
+  const OPEN_SITE = 4.7, OPEN_MS = 7.2, DROP = 2.8;
+  const P = { rest: { x: 430, y: 236 }, drag: center("#dragBtn"), bm: center("#bm"), open: center("#openBtn"), dl: center("#dlBtn") };
+  const MOVES = [[0, P.rest], [0.5, P.rest], [1.3, P.drag], [1.5, P.drag], [2.7, P.bm], [3.6, P.bm], [4.3, P.open],
+    [5.5, P.open], [6.2, P.bm], [7.6, P.bm], [8.3, P.dl], [99, P.dl]];
+  const CLICKS = [1.4, 4.35, 6.25, 8.35];
+  const CAPTIONS = [[0, "Drag the button to your bookmarks bar. Only once."], [3.5, "Open the reel on Instagram."],
+    [5.4, "Click the bookmark. No need to log in."], [7.2, "Download the reel in the new tab."]];
+  const ghostSize = { w: $("#ghost").offsetWidth, h: $("#ghost").offsetHeight };
+
+  function cursorAt(t) {
+    for (let i = 0; i < MOVES.length - 1; i++) {
+      const [t0, a] = MOVES[i], [t1, b] = MOVES[i + 1];
+      if (t >= t0 && t < t1) {
+        const p = prog(t, t0, t1);
+        return { x: a.x + (b.x - a.x) * p, y: a.y + (b.y - a.y) * p };
+      }
+    }
+    return MOVES[MOVES.length - 1][1];
+  }
+
+  window.render = (t) => {
+    const tab = t < OPEN_SITE ? 1 : t < OPEN_MS ? 2 : 3;
+    for (const i of [1, 2, 3]) {
+      $("#tab" + i).style.display = i <= tab ? "flex" : "none";
+      $("#tab" + i).classList.toggle("active", i === tab);
+    }
+    $("#addr").textContent = tab === 2 ? "instagram.com/reel/…" : "Media Saver";
+    show("#pageA", tab === 1);
+    show("#pageB", tab === 2);
+    show("#pageC", tab === 3);
+
+    const dragging = t >= 1.5 && t < DROP;
+    $("#bmbar").classList.toggle("drop", dragging);
+    show("#bm", t >= DROP);
+    show("#bmHint", t < DROP);
+    $("#bm").classList.toggle("hover", t >= 6.0 && t < 6.6);
+    $("#dragBtn").classList.toggle("down", t >= 1.4 && t < DROP);
+    $("#openBtn").classList.toggle("down", t >= 4.35 && t < 4.6);
+    $("#dlBtn").classList.toggle("down", t >= 8.35 && t < 8.55);
+
+    const c = cursorAt(t);
+    $("#cursor").style.left = c.x - 1 + "px";
+    $("#cursor").style.top = c.y - 1 + "px";
+    show("#ghost", dragging);
+    $("#ghost").style.left = c.x - ghostSize.w / 2 + "px";
+    $("#ghost").style.top = c.y - ghostSize.h / 2 + "px";
+
+    const click = CLICKS.find((x) => t >= x && t < x + 0.4);
+    show("#ring", click !== undefined);
+    if (click !== undefined) {
+      const p = (t - click) / 0.4;
+      Object.assign($("#ring").style, { left: c.x + "px", top: c.y + "px", transform: `scale(${0.4 + p})`, opacity: String(1 - p) });
+    }
+
+    // Children set visible stay visible inside a hidden page, so end it too.
+    show("#badge", t >= 6.5 && t < OPEN_MS);
+    $("#fill").style.width = prog(t, 8.5, 10.0) * 100 + "%";
+    show("#done", t >= 10.0);
+
+    const step = CAPTIONS.filter(([at]) => t >= at).length;
+    $("#capn").textContent = step;
+    $("#capt").textContent = CAPTIONS[step - 1][1];
+
+    // Fade in and out so the loop restarts cleanly.
+    $("#fade").style.opacity = String(Math.max(1 - t / 0.3, prog(t, window.DURATION - 0.45, window.DURATION)));
+  };
+
+  window.render(0);
+  });
+</script>
+</body>
+</html>
