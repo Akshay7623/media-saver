@@ -2,15 +2,195 @@
 @tailwind components;
 @tailwind utilities;
 
-.glass_effect {
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.125);
+/* ── Design tokens ──────────────────────────────────────────
+   RGB triplets, so Tailwind can add opacity: bg-accent/20.
+   The dark set applies when <html> has the "dark" class. */
+@layer base {
+  :root {
+    --page: 247 247 242;
+    --card: 255 255 255;
+    --sunken: 240 240 233;
+    --sunken-2: 230 230 222;
+    --line: 226 226 217;
+    --line-strong: 204 204 194;
+    --fg: 17 19 16;
+    --muted: 82 86 79;
+    --subtle: 107 112 103;
+    --accent: 197 242 74;
+    --accent-strong: 183 232 47;
+    --accent-fg: 17 19 16;
+    --accent-ink: 63 98 18;
+    --danger: 185 28 28;
+    --warn: 180 83 9;
+    --youtube: 230 33 23;
+    --instagram: 214 41 118;
+    --shadow-card: 0 1px 0 rgb(17 19 16 / 0.03), 0 20px 44px -28px rgb(17 19 16 / 0.28);
+    --shadow-lift: 0 1px 0 rgb(17 19 16 / 0.04), 0 30px 60px -30px rgb(17 19 16 / 0.35);
+    color-scheme: light;
+  }
+
+  .dark {
+    --page: 12 13 11;
+    --card: 21 23 20;
+    --sunken: 29 32 28;
+    --sunken-2: 39 43 38;
+    --line: 39 43 38;
+    --line-strong: 60 65 58;
+    --fg: 242 243 238;
+    --muted: 166 171 161;
+    --subtle: 128 134 123;
+    --accent: 197 242 74;
+    --accent-strong: 214 250 110;
+    --accent-fg: 12 13 11;
+    --accent-ink: 197 242 74;
+    --danger: 248 113 113;
+    --warn: 251 191 36;
+    --youtube: 255 92 92;
+    --instagram: 244 114 182;
+    --shadow-card: inset 0 1px 0 rgb(255 255 255 / 0.035);
+    --shadow-lift: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 30px 60px -30px rgb(0 0 0 / 0.8);
+    color-scheme: dark;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    @apply bg-page text-fg font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+    min-height: 100vh;
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: rgb(var(--accent) / 0.7);
+    color: rgb(var(--accent-fg));
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--fg));
+    outline-offset: 2px;
+  }
+
+  /* Sections linked from the menu stop below the sticky header. */
+  section[id] {
+    scroll-margin-top: 80px;
+  }
 }
 
-body {
-  background-color: #d5e4ff;
-  background-image: radial-gradient(at 47% 33%,hsl(162deg 47.98% 73.64%) 0,transparent 59%),
-    radial-gradient(at 82% 65%, hsl(0deg 43.47% 75.77%) 0, transparent 55%);
+@layer components {
+  .font-display {
+    font-optical-sizing: auto;
+    letter-spacing: -0.025em;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 h-11 text-sm font-semibold whitespace-nowrap select-none
+      transition-[background-color,color,box-shadow,transform,opacity] duration-150
+      active:translate-y-px disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-lg {
+    @apply h-12 px-5 text-[15px];
+  }
+  .btn-sm {
+    @apply h-9 px-3 text-[13px] rounded-lg;
+  }
+  .btn-primary {
+    @apply bg-accent text-accent-fg hover:bg-accent-strong;
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.07), 0 1px 2px rgb(0 0 0 / 0.1);
+  }
+  .btn-secondary {
+    @apply bg-card text-fg border border-line hover:bg-sunken hover:border-line-strong;
+  }
+  .btn-ghost {
+    @apply text-muted hover:text-fg hover:bg-sunken;
+  }
+
+  .card {
+    @apply bg-card border border-line rounded-3xl shadow-card;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted;
+  }
+  .eyebrow::before {
+    content: "";
+    @apply w-1.5 h-1.5 rounded-full bg-accent;
+    box-shadow: 0 0 0 3px rgb(var(--accent) / 0.25);
+  }
+
+  .link {
+    @apply font-medium text-fg underline decoration-accent decoration-2 underline-offset-[3px] hover:decoration-fg transition-colors;
+  }
+
+  .kbd {
+    @apply inline-flex items-center rounded-md border border-line-strong bg-sunken px-1.5 py-px font-sans text-[12px] font-semibold text-fg;
+    box-shadow: inset 0 -1px 0 rgb(var(--line-strong));
+  }
+
+  /* A faint grid behind the hero, fading out toward the edges. */
+  .hero-grid {
+    background-image:
+      linear-gradient(rgb(var(--fg) / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--fg) / 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, rgb(var(--sunken)) 0%, rgb(var(--sunken-2)) 50%, rgb(var(--sunken)) 100%);
+    background-size: 200% 100%;
+    @apply animate-shimmer rounded-lg;
+  }
+
+  /* Long-form text on the legal pages. */
+  .prose-doc {
+    @apply text-[15px] leading-7 text-muted;
+  }
+  .prose-doc p + p,
+  .prose-doc p + ul,
+  .prose-doc ul + p {
+    @apply mt-3;
+  }
+  .prose-doc ul {
+    @apply list-disc pl-5 space-y-2 marker:text-subtle;
+  }
+  .prose-doc strong {
+    @apply font-semibold text-fg;
+  }
+  .prose-doc a {
+    @apply link;
+  }
+}
+
+
+@layer components {
+  .bookmark-chip {
+    box-shadow:
+      inset 0 0 0 1px rgb(0 0 0 / 0.08),
+      0 10px 24px -10px rgb(var(--accent) / 0.95);
+  }
+}
+
+@layer components {
+  /* The highlighted second line of the home headline. */
+  .sticker {
+    @apply inline-block rounded-[0.16em] bg-accent px-[0.2em] pb-[0.1em] pt-[0.02em] text-accent-fg;
+    transform: rotate(-1.6deg);
+    box-shadow:
+      inset 0 0 0 1px rgb(0 0 0 / 0.06),
+      0 18px 40px -18px rgb(var(--accent) / 0.9);
+  }
 }

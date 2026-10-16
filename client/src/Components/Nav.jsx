@@ -1,124 +1,100 @@
-import React, { useState } from "react";
-import { Navbar, NavbarBrand, NavbarMenuToggle, NavbarMenuItem, NavbarMenu, NavbarContent, NavbarItem } from "@nextui-org/react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { useAppTheme } from "../context/ThemeContext";
+import Logo from "./Logo";
+import { IconClose, IconMenu, IconMoon, IconSun } from "./icons";
+
+// Sections of the home page, linked as /#id from every page.
+const LINKS = [
+  { label: "How it works", to: "/#how-it-works" },
+  { label: "Sites", to: "/#sites" },
+  { label: "FAQ", to: "/#faq" },
+];
+
+const linkCls =
+  "rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-sunken hover:text-fg";
+
+function ThemeToggle() {
+  const { isDark, toggle } = useAppTheme();
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Light mode" : "Dark mode"}
+      className="grid h-10 w-10 place-items-center rounded-xl border border-line text-muted transition-colors hover:border-line-strong hover:bg-sunken hover:text-fg"
+    >
+      {isDark ? <IconSun size={18} /> : <IconMoon size={18} />}
+    </button>
+  );
+}
 
 export default function Nav() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const location = useLocation();
 
-    const hanldeFaq = () => {
-        if (location.pathname !== "/") {
-            navigate("/")
-        } else {
-            const e = document.getElementById("faq");
-            setIsMenuOpen(false)
-            window.scrollTo({
-                top: e.offsetTop,
-                behavior: 'smooth'
-            })
-        }
-    }
+  // Close the phone menu after any navigation, or on Escape.
+  useEffect(() => setOpen(false), [location]);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
-    const Home = () => {
-        if (location.pathname !== "/") {
-            navigate("/")
-        } else {
-            const e = document.getElementById("input");
-            setIsMenuOpen(false)
-            window.scrollTo({
-                top: e.offsetTop - 86,
-                behavior: 'smooth'
-            })
-        }
-    }
+  return (
+    <header className="sticky top-0 z-40 border-b border-line/70 bg-page/80 backdrop-blur-xl backdrop-saturate-150">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+        <Logo />
 
-    const hanldeFeatue = () => {
-        if (location.pathname !== "/") {
-            navigate("/")
-        } else {
-            const e = document.getElementById("features");
-            setIsMenuOpen(false)
-            window.scrollTo({
-                top: e.offsetTop - 64,
-                behavior: 'smooth'
-            })
-        }
-    }
+        <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
+          {LINKS.map((l) => (
+            <Link key={l.to} to={l.to} className={linkCls}>
+              {l.label}
+            </Link>
+          ))}
+          <NavLink to="/about" className={({ isActive }) => `${linkCls} ${isActive ? "bg-sunken text-fg" : ""}`}>
+            About
+          </NavLink>
+        </nav>
 
-    const menuItems = [
-        ["Home", Home],
-        ["Features", hanldeFeatue],
-        ["FAQ", hanldeFaq],
-        ["Download", Home],
-        ["Youtube", Home],
-        ["Contact us",()=>navigate("/contact")],
-        ["About us",()=>navigate("/about")],
-        ["Terms & Conditions", ()=>navigate("/t-and-c")],
-        ["Privacy policy",()=>navigate("/privacy-policy")],
-    ];
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            className="grid h-10 w-10 place-items-center rounded-xl border border-line text-fg transition-colors hover:bg-sunken md:hidden"
+          >
+            {open ? <IconClose size={18} /> : <IconMenu size={18} />}
+          </button>
+        </div>
+      </div>
 
-    return (
-        <Navbar
-            isBordered
-            isMenuOpen={isMenuOpen}
-            onMenuOpenChange={setIsMenuOpen}
-            className="border-[#DCDCDC] border-1 border-solid rounded"
+      {open && (
+        <nav
+          id="mobile-menu"
+          aria-label="Main"
+          className="motion-safe:animate-fade-up border-t border-line bg-page px-4 pb-5 pt-2 md:hidden"
         >
-            <NavbarContent className="sm:hidden" justify="start">
-                <NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
-            </NavbarContent>
-
-            <NavbarContent className="sm:hidden pr-3" justify="center">
-                <NavbarBrand>
-                    <p className="font-bold text-inherit">Vid Saver</p>
-                </NavbarBrand>
-            </NavbarContent>
-
-            <NavbarContent className="hidden sm:flex gap-4" justify="center">
-                <NavbarBrand>
-                    <p className="font-bold text-inherit">Vid Saver</p>
-                </NavbarBrand>
-                <NavbarItem>
-                    <Link to="/">
-                        Home
-                    </Link>
-                </NavbarItem>
-                <NavbarItem >
-                    <Link to="/" >
-                        Youtube
-                    </Link>
-                </NavbarItem>
-                <NavbarItem>
-                    <Link color="foreground" to="/">
-                        Facebook
-                    </Link>
-                </NavbarItem>
-                <NavbarItem>
-                    <Link color="foreground" to="/contact">
-                        Contact
-                    </Link>
-                </NavbarItem>
-                <NavbarItem>
-                    <Link color="foreground" to="/about">
-                        About
-                    </Link>
-                </NavbarItem>
-            </NavbarContent>
-
-
-            <NavbarMenu>
-                {menuItems.map((item, index) => (
-                    <NavbarMenuItem key={`${item}-${index}`}>
-                        <div
-                            className="w-ful cursor-pointer"
-                            onClick={item[1]}
-                            size="lg"
-                        >
-                            {item[0]}
-                        </div>
-                    </NavbarMenuItem>
-                ))}
-            </NavbarMenu>
-        </Navbar>
-    );
+          <ul className="flex flex-col">
+            {[...LINKS, { label: "About", to: "/about" }, { label: "Terms", to: "/t-and-c" }, { label: "Privacy", to: "/privacy-policy" }].map((l) => (
+              <li key={l.to}>
+                <Link
+                  to={l.to}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between border-b border-line py-3.5 text-[15px] font-medium text-fg"
+                >
+                  {l.label}
+                  <span aria-hidden="true" className="text-subtle">→</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+    </header>
+  );
 }
